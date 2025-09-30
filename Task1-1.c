@@ -26,8 +26,8 @@ double defB(const double X, const double Y, const double Z);
 int main(void)
 {
 	const double X = 2.0;
-	const double Y = 1.5;
-	const double Z = 0.8;
+	const double Y = 0.7;
+	const double Z = -1;
 
 	printf("A = %.6f\nB = %.6f", defA(X, Y, Z), defB(X, Y, Z));
 
@@ -35,7 +35,7 @@ int main(void)
 }
 double defA(const double X, const double Y, const double Z)
 {
-	return(X * Y * Z + abs(Z * sin(Y)));
+	return(cbrt(X * Y * Z + fabs(Z * sin(Y))));
 }
 double defB(const double X, const double Y, const double Z)
 {
