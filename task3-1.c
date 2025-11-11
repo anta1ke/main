@@ -8,7 +8,7 @@
  * @param x - аргумент функции
  * @return возвращает значение функции или NAN при ошибке
  */
-double calculateFunction(double x);
+double calculateFunction(const double x);
 
 /**
  * @brief считывает значение, введенное с клавиатуры с проверкой ввода
@@ -65,12 +65,6 @@ int main(void)
         }
 
         x += step;
-        point_count++;
-
-        // Защита от бесконечного цикла
-        if (point_count > 10000) {
-            printf("Превышено максимальное количество точек. Возможно, шаг слишком мал.\n");
-            break;
         }
     }
 
@@ -80,7 +74,7 @@ int main(void)
 double calculateFunction(double x)
 {
     // Проверка на возможность вычисления ln(x)
-    if (x <= 0) {
+    if (x <= DBL+EPSILON) {
         return NAN;
     }
 
@@ -94,10 +88,6 @@ double getValue()
     if (scanf_s("%lf", &value) != 1)
     {
         printf("Ошибка ввода!\n");
-        // Очистка буфера ввода
-        while (getchar() != '\n');
-        printf("Пожалуйста, введите числовое значение: ");
-        return getValue(); // рекурсивный вызов для повторного ввода
     }
     return value;
 }
