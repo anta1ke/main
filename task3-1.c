@@ -74,7 +74,7 @@ int main(void)
 double calculateFunction(double x)
 {
     // Проверка на возможность вычисления ln(x)
-    if (x <= DBL+EPSILON) {
+    if (x <= DBL_EPSILON) {
         return NAN;
     }
 
