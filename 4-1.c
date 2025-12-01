@@ -134,7 +134,6 @@ int main(void)
 
     printf("3. Массив после умножения элементов кратных 3 на третий элемент (%d): ", arr[2]);
     int* modifiedArr = copyArray(arr, size);
-    multiplyMultiplesOfThree(arr, modifiedArr, size);
     printArray(modifiedArr, size);
     free(modifiedArr);
 
