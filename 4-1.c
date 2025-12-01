@@ -76,10 +76,17 @@ void printIndicesGreaterThanNext(const int* arr, const size_t size);
 void multiplyMultiplesOfThree(const int* source, int* destination, const size_t size);
 
 /**
+ * @brief Освобождает память и выводит сообщение об ошибке
+ * @param arr массив для освобождения
+ * @param message сообщение об ошибке
+ */
+void handleError(int* arr, char* message);
+
+/**
  * @brief RANDOM - заполнение массива случайными числами в пределах введённого пользователем диапазона
  * @brief MANUAL - заполнение массива вручную
  */
-enum {RANDOM = 1, MANUAL};
+enum { RANDOM = 1, MANUAL };
 
 /**
  * @brief Точка входа в программу
@@ -89,50 +96,47 @@ int main(void)
 {
     setlocale(LC_ALL, "Russian");
     srand(time(NULL));
-    
+
     size_t size = getSize("Введите размер массива: ");
     int* arr = malloc(size * sizeof(int));
     if (arr == NULL)
     {
-        fprintf(stderr, "Ошибка выделения памяти!\n");
-        exit(1);
+        handleError(NULL, "Ошибка выделения памяти!");
     }
-    
+
     printf("Выберите способ заполнения массива:\n"
-           "%d - случайными числами\n"
-           "%d - вручную\n", RANDOM, MANUAL);
+        "%d - случайными числами\n"
+        "%d - вручную\n", RANDOM, MANUAL);
     int choice = Value();
-    
-    switch(choice)
+
+    switch (choice)
     {
-        case RANDOM:
-            fillRandom(arr, size);
-            break;
-        case MANUAL:
-            fillArray(arr, size);
-            break;
-        default:
-            fprintf(stderr, "Ошибка выбора!\n");
-            free(arr);
-            exit(1);
+    case RANDOM:
+        fillRandom(arr, size);
+        break;
+    case MANUAL:
+        fillArray(arr, size);
+        break;
+    default:
+        handleError(arr, "Ошибка выбора!");
     }
-    
+
     printf("Исходный массив: ");
     printArray(arr, size);
-    
+
     printf("1. Сумма элементов по модулю меньше 10: %d\n", sumModulusLessThanTen(arr, size));
-    
+
     printf("2. Индексы элементов, больших следующего: ");
     printIndicesGreaterThanNext(arr, size);
-    
+
     printf("3. ");
     int* modifiedArr = copyArray(arr, size);
     multiplyMultiplesOfThree(arr, modifiedArr, size);
     free(modifiedArr);
-    
+
     printf("Исходный массив (не изменен): ");
     printArray(arr, size);
-    
+
     free(arr);
     return 0;
 }
@@ -141,7 +145,7 @@ int Value(void)
 {
     int value = 0;
     int result = scanf("%d", &value);
-    if (result != 1){
+    if (result != 1) {
         fprintf(stderr, "Ошибка ввода!\n");
         exit(1);
     }
@@ -152,7 +156,7 @@ double getDouble(void)
 {
     double value = 0;
     int result = scanf("%lf", &value);
-    if (result != 1){
+    if (result != 1) {
         fprintf(stderr, "Ошибка ввода!\n");
         exit(1);
     }
@@ -193,7 +197,7 @@ void fillRandom(int* arr, const size_t size)
 {
     int start = -40;
     int end = 40;
-    
+
     printf("Диапазон заполнения: [-40; 40]\n");
     for (size_t i = 0; i < size; i++)
     {
@@ -249,15 +253,9 @@ void printIndicesGreaterThanNext(const int* arr, const size_t size)
 
 void multiplyMultiplesOfThree(const int* source, int* destination, const size_t size)
 {
-    if (size < 3)
-    {
-        printf("Ошибка: массив должен содержать минимум 3 элемента\n");
-        return;
-    }
-
     int thirdElement = source[2];
     printf("Массив после умножения элементов кратных 3 на третий элемент (%d): ", thirdElement);
-    
+
     for (size_t i = 0; i < size; i++)
     {
         destination[i] = source[i];
@@ -268,4 +266,14 @@ void multiplyMultiplesOfThree(const int* source, int* destination, const size_t 
         printf("%d ", destination[i]);
     }
     printf("\n");
+}
+
+void handleError(int* arr, char* message)
+{
+    if (arr != NULL)
+    {
+        free(arr);
+    }
+    fprintf(stderr, "%s\n", message);
+    exit(1);
 }
