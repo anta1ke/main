@@ -90,7 +90,7 @@ void checkPositive(const double value) {
 double getSumN(const int n) {
     double result = 0.0;
     double current = 1.0;
-    for (int k = 1; k <= n; k++) {
+    for (int k = 1; k < n; k++) {
         result += current;
         if (k < n) {
             current *= getRecurent(k);
