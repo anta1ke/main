@@ -76,6 +76,13 @@ void printIndicesGreaterThanNext(const int* arr, const size_t size);
 void multiplyMultiplesOfThree(const int* source, int* destination, const size_t size);
 
 /**
+ * @brief Выделяет память для массива заданного размера с обработкой ошибок
+ * @param size размер массива
+ * @return указатель на выделенную память
+ */
+int* allocateArray(size_t size);
+
+/**
  * @brief Освобождает память и выводит сообщение об ошибке
  * @param arr массив для освобождения
  * @param message сообщение об ошибке
@@ -98,11 +105,7 @@ int main(void)
     srand(time(NULL));
 
     size_t size = getSize("Введите размер массива: ");
-    int* arr = malloc(size * sizeof(int));
-    if (arr == NULL)
-    {
-        handleError(NULL, "Ошибка выделения памяти!");
-    }
+    int* arr = allocateArray(size);
 
     printf("Выберите способ заполнения массива:\n"
         "%d - случайными числами\n"
@@ -129,9 +132,10 @@ int main(void)
     printf("2. Индексы элементов, больших следующего: ");
     printIndicesGreaterThanNext(arr, size);
 
-    printf("3. ");
+    printf("3. Массив после умножения элементов кратных 3 на третий элемент (%d): ", arr[2]);
     int* modifiedArr = copyArray(arr, size);
     multiplyMultiplesOfThree(arr, modifiedArr, size);
+    printArray(modifiedArr, size);
     free(modifiedArr);
 
     printf("Исходный массив (не изменен): ");
@@ -195,8 +199,8 @@ void printArray(const int* arr, const size_t size)
 
 void fillRandom(int* arr, const size_t size)
 {
-    int start = -40;
-    int end = 40;
+    int start = Value();
+    int end = Value();
 
     printf("Диапазон заполнения: [-40; 40]\n");
     for (size_t i = 0; i < size; i++)
@@ -207,12 +211,8 @@ void fillRandom(int* arr, const size_t size)
 
 int* copyArray(const int* arr, const size_t size)
 {
-    int* copyArr = malloc(sizeof(int) * size);
-    if (copyArr == NULL)
-    {
-        fprintf(stderr, "Ошибка выделения памяти для копии!\n");
-        exit(1);
-    }
+    int* copyArr = allocateArray(size);
+    
     for (size_t i = 0; i < size; i++)
     {
         copyArr[i] = arr[i];
@@ -254,8 +254,7 @@ void printIndicesGreaterThanNext(const int* arr, const size_t size)
 void multiplyMultiplesOfThree(const int* source, int* destination, const size_t size)
 {
     int thirdElement = source[2];
-    printf("Массив после умножения элементов кратных 3 на третий элемент (%d): ", thirdElement);
-
+    
     for (size_t i = 0; i < size; i++)
     {
         destination[i] = source[i];
@@ -263,9 +262,7 @@ void multiplyMultiplesOfThree(const int* source, int* destination, const size_t 
         {
             destination[i] *= thirdElement;
         }
-        printf("%d ", destination[i]);
     }
-    printf("\n");
 }
 
 void handleError(int* arr, char* message)
@@ -276,4 +273,14 @@ void handleError(int* arr, char* message)
     }
     fprintf(stderr, "%s\n", message);
     exit(1);
+}
+
+int* allocateArray(size_t size)
+{
+    int* arr = malloc(size * sizeof(int));
+    if (arr == NULL)
+    {
+        handleError(NULL, "Ошибка выделения памяти!");
+    }
+    return arr;
 }
