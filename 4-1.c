@@ -2,79 +2,159 @@
 #include <stdlib.h>
 #include <time.h>
 #include <locale.h>
+#define scanf_s scanf
 
 /**
- * @return Ввод данных типа int
- * @return Введенное значение
+ * @brief Считывает введённое с клавиатуры целое значение и проверяет на правильность ввода
+ * @return введённое значение
  */
-int Value();
+int Value(void);
 
+/**
+ * @brief Считывает введённое с клавиатуры вещественное значение и проверяет на правильность ввода
+ * @return введённое значение
+ */
+double getDouble(void);
+
+/**
+ * @brief Выводит текстовое сообщение о необходимости ввода размера массива, проверяет ввод на правильность, задаёт размер массива
+ * @param message текстовое сообщение о необходимости ввода массива
+ * @return размер массива (количество его элементов)
+ */
 size_t getSize(char* message);
 
+/**
+ * @brief Считывает значения элементов массива
+ * @param arr массив
+ * @param size размер массива
+ */
 void fillArray(int* arr, const size_t size);
+
+/**
+ * @brief Выводит массив (его элементы)
+ * @param arr массив
+ * @param size размер массива
+ */
+void printArray(const int* arr, const size_t size);
+
+/**
+ * @brief Заполняет массив случайными числами в пределах введённого пользователем диапазона
+ * @param arr массив
+ * @param size размер массива
+ */
 void fillRandom(int* arr, const size_t size);
-void printArray(int* arr, const size_t size);
-int sumLessThanTen(int* arr, const size_t size);
-void printIndicesGreaterThanNext(int* arr, const size_t size);
-void multiplyMultiplesOfThree(int* arr, const size_t size);
 
-enum { RANDOM = 1, MANUAL };
+/**
+ * @brief Создаёт копию массива
+ * @param arr массив
+ * @param size размер массива
+ * @return полученный массив
+ */
+int* copyArray(const int* arr, const size_t size);
 
-int main()
+/**
+ * @brief Находит сумму элементов, значения которых по модулю меньше 10
+ * @param arr массив
+ * @param size размер массива
+ * @return сумма элементов
+ */
+int sumModulusLessThanTen(const int* arr, const size_t size);
+
+/**
+ * @brief Выводит индексы элементов, значения которых больше значения последующего элемента
+ * @param arr массив
+ * @param size размер массива
+ */
+void printIndicesGreaterThanNext(const int* arr, const size_t size);
+
+/**
+ * @brief Умножает все элементы массива, кратные 3, на третий элемент массива
+ * @param source исходный массив
+ * @param destination массив для изменений (копия)
+ * @param size размер массива
+ */
+void multiplyMultiplesOfThree(const int* source, int* destination, const size_t size);
+
+/**
+ * @brief RANDOM - заполнение массива случайными числами в пределах введённого пользователем диапазона
+ * @brief MANUAL - заполнение массива вручную
+ */
+enum {RANDOM = 1, MANUAL};
+
+/**
+ * @brief Точка входа в программу
+ * @return 0, если программа выполнена корректно, иначе 1.
+ */
+int main(void)
 {
     setlocale(LC_ALL, "Russian");
-
     srand(time(NULL));
+    
     size_t size = getSize("Введите размер массива: ");
-
     int* arr = malloc(size * sizeof(int));
     if (arr == NULL)
     {
-        printf("error");
+        fprintf(stderr, "Ошибка выделения памяти!\n");
         exit(1);
     }
-
+    
     printf("Выберите способ заполнения массива:\n"
-        "%d - случайными числами, %d - вручную: ", RANDOM, MANUAL);
+           "%d - случайными числами\n"
+           "%d - вручную\n", RANDOM, MANUAL);
     int choice = Value();
-
-    switch (choice)
+    
+    switch(choice)
     {
-    case RANDOM:
-        fillRandom(arr, size);
-        break;
-    case MANUAL:
-        fillArray(arr, size);
-        break;
-    default:
-        printf("error");
-        free(arr);
-        exit(1);
+        case RANDOM:
+            fillRandom(arr, size);
+            break;
+        case MANUAL:
+            fillArray(arr, size);
+            break;
+        default:
+            fprintf(stderr, "Ошибка выбора!\n");
+            free(arr);
+            exit(1);
     }
-
+    
     printf("Исходный массив: ");
     printArray(arr, size);
-
-    printf("Сумма элементов по модулю меньше 10: %d\n", sumLessThanTen(arr, size));
-
-    printf("Индексы элементов, больших следующего: ");
+    
+    printf("1. Сумма элементов по модулю меньше 10: %d\n", sumModulusLessThanTen(arr, size));
+    
+    printf("2. Индексы элементов, больших следующего: ");
     printIndicesGreaterThanNext(arr, size);
-
-    multiplyMultiplesOfThree(arr, size);
-    printf("Массив после умножения элементов кратных 3 на третий элемент: ");
+    
+    printf("3. ");
+    int* modifiedArr = copyArray(arr, size);
+    multiplyMultiplesOfThree(arr, modifiedArr, size);
+    free(modifiedArr);
+    
+    printf("Исходный массив (не изменен): ");
     printArray(arr, size);
-
+    
     free(arr);
     return 0;
 }
 
-int Value()
+int Value(void)
 {
     int value = 0;
-    if (scanf("%d", &value) != 1)
-    {
-        printf("ERROR\n");
-        abort();
+    int result = scanf("%d", &value);
+    if (result != 1){
+        fprintf(stderr, "Ошибка ввода!\n");
+        exit(1);
+    }
+    return value;
+}
+
+double getDouble(void)
+{
+    double value = 0;
+    int result = scanf("%lf", &value);
+    if (result != 1){
+        fprintf(stderr, "Ошибка ввода!\n");
+        exit(1);
     }
     return value;
 }
@@ -85,8 +165,8 @@ size_t getSize(char* message)
     int value = Value();
     if (value <= 0)
     {
-        printf("ERROR");
-        abort();
+        fprintf(stderr, "Размер должен быть положительным!\n");
+        exit(1);
     }
     return (size_t)value;
 }
@@ -95,25 +175,12 @@ void fillArray(int* arr, const size_t size)
 {
     for (size_t i = 0; i < size; i++)
     {
-        printf("Введите элемент %zu: ", i);
+        printf("Введите элемент %zu: ", i + 1);
         arr[i] = Value();
     }
 }
 
-void fillRandom(int* arr, const size_t size)
-{
-    printf("Диапазон от: ");
-    int start = Value();
-    printf("Диапазон до: ");
-    int end = Value();
-
-    for (size_t i = 0; i < size; i++)
-    {
-        arr[i] = rand() % (end - start + 1) + start;
-    }
-}
-
-void printArray(int* arr, const size_t size)
+void printArray(const int* arr, const size_t size)
 {
     for (size_t i = 0; i < size; i++)
     {
@@ -122,7 +189,34 @@ void printArray(int* arr, const size_t size)
     printf("\n");
 }
 
-int sumLessThanTen(int* arr, const size_t size)
+void fillRandom(int* arr, const size_t size)
+{
+    int start = -40;
+    int end = 40;
+    
+    printf("Диапазон заполнения: [-40; 40]\n");
+    for (size_t i = 0; i < size; i++)
+    {
+        arr[i] = rand() % (end - start + 1) + start;
+    }
+}
+
+int* copyArray(const int* arr, const size_t size)
+{
+    int* copyArr = malloc(sizeof(int) * size);
+    if (copyArr == NULL)
+    {
+        fprintf(stderr, "Ошибка выделения памяти для копии!\n");
+        exit(1);
+    }
+    for (size_t i = 0; i < size; i++)
+    {
+        copyArr[i] = arr[i];
+    }
+    return copyArr;
+}
+
+int sumModulusLessThanTen(const int* arr, const size_t size)
 {
     int result = 0;
     for (size_t i = 0; i < size; i++)
@@ -135,7 +229,7 @@ int sumLessThanTen(int* arr, const size_t size)
     return result;
 }
 
-void printIndicesGreaterThanNext(int* arr, const size_t size)
+void printIndicesGreaterThanNext(const int* arr, const size_t size)
 {
     int found = 0;
     for (size_t i = 0; i < size - 1; i++)
@@ -153,20 +247,25 @@ void printIndicesGreaterThanNext(int* arr, const size_t size)
     printf("\n");
 }
 
-void multiplyMultiplesOfThree(int* arr, const size_t size)
+void multiplyMultiplesOfThree(const int* source, int* destination, const size_t size)
 {
     if (size < 3)
     {
-        printf("ERROR: массив должен содержать минимум 3 элемента\n");
+        printf("Ошибка: массив должен содержать минимум 3 элемента\n");
         return;
     }
 
-    int thirdElement = arr[2];
+    int thirdElement = source[2];
+    printf("Массив после умножения элементов кратных 3 на третий элемент (%d): ", thirdElement);
+    
     for (size_t i = 0; i < size; i++)
     {
-        if (arr[i] % 3 == 0)
+        destination[i] = source[i];
+        if (source[i] % 3 == 0)
         {
-            arr[i] *= thirdElement;
+            destination[i] *= thirdElement;
         }
+        printf("%d ", destination[i]);
     }
+    printf("\n");
 }
