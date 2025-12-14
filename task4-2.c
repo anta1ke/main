@@ -16,7 +16,7 @@ int Value(void);
  * @param message текстовое сообщение о необходимости ввода массива
  * @return размер массива (количество его элементов)
  */
-size_t getSize(char* message);
+size_t getSize(const char* message);
 
 /**
  * @brief Считывает значения элементов массива
@@ -86,28 +86,36 @@ int formArrayFromD(int* copyArr, const size_t size);
  * @param num число
  * @return true если первая цифра четная, иначе false
  */
-bool isFirstDigitEven(int num);
+bool isFirstDigitEven(const int num);
 
 /**
  * @brief Проверяет, является ли последняя цифра числа четной
  * @param num число
  * @return true если последняя цифра четная, иначе false
  */
-bool isLastDigitEven(int num);
+bool isLastDigitEven(const int num);
+
+/**
+ * @brief Находит минимальный по модулю положительный элемент в массиве
+ * @param arr массив
+ * @param size размер массива
+ * @return индекс минимального по модулю положительного элемента или -1 если не найден
+ */
+int findMinPositive(const int* arr, const size_t size);
 
 /**
  * @brief Выделяет память для массива заданного размера с обработкой ошибок
  * @param size размер массива
  * @return указатель на выделенную память
  */
-int* allocateArray(size_t size);
+int* allocateArray(const size_t size);
 
 /**
  * @brief Освобождает память и выводит сообщение об ошибке
  * @param arr массив для освобождения
  * @param message сообщение об ошибке
  */
-void handleError(int* arr, char* message);
+void handleError(int* arr, const char* message);
 
 /**
  * @brief RANDOM - заполнение массива случайными числами в пределах введённого пользователем диапазона
@@ -149,6 +157,18 @@ int main(void)
 
     // 1. Замена минимального по модулю положительного элемента нулем
     printf("\n1. Замена минимального по модулю положительного элемента нулем:\n");
+
+    int minPositiveIndex = findMinPositive(arr, size);
+    if (minPositiveIndex != -1)
+    {
+        printf("   Найден минимальный по модулю положительный элемент на индексе %d (значение: %d)\n",
+            minPositiveIndex, arr[minPositiveIndex]);
+    }
+    else
+    {
+        printf("   Положительные элементы не найдены\n");
+    }
+
     int* copyArr1 = copyArray(arr, size);
     int replacedIndex = replaceMinPositiveWithZero(arr, copyArr1, size);
     if (replacedIndex != -1)
@@ -233,7 +253,7 @@ int Value(void)
     return value;
 }
 
-size_t getSize(char* message)
+size_t getSize(const char* message)
 {
     printf("%s", message);
     int value = Value();
@@ -300,25 +320,9 @@ int replaceMinPositiveWithZero(const int* source, int* destination, const size_t
         destination[i] = source[i];
     }
 
-    int minIndex = -1;
-    int minAbsValue = -1;
-    bool foundPositive = false;
+    int minIndex = findMinPositive(source, size);
 
-    for (size_t i = 0; i < size; i++)
-    {
-        if (source[i] > 0)
-        {
-            int absValue = abs(source[i]);
-            if (!foundPositive || absValue < minAbsValue)
-            {
-                minIndex = i;
-                minAbsValue = absValue;
-                foundPositive = true;
-            }
-        }
-    }
-
-    if (foundPositive)
+    if (minIndex != -1)
     {
         destination[minIndex] = 0;
         return minIndex;
@@ -327,23 +331,46 @@ int replaceMinPositiveWithZero(const int* source, int* destination, const size_t
     return -1;
 }
 
-bool isFirstDigitEven(int num)
+bool isFirstDigitEven(const int num)
 {
     if (num == 0) return true;
 
-    num = abs(num);
+    int temp = abs(num);
 
-    while (num >= 10)
+    while (temp >= 10)
     {
-        num /= 10;
+        temp /= 10;
     }
-    return num % 2 == 0;
+    return temp % 2 == 0;
 }
 
-bool isLastDigitEven(int num)
+bool isLastDigitEven(const int num)
 {
     if (num == 0) return true;
     return abs(num) % 2 == 0;
+}
+
+int findMinPositive(const int* arr, const size_t size)
+{
+    int minIndex = -1;
+    int minAbsValue = -1;
+    bool foundPositive = false;
+
+    for (size_t i = 0; i < size; i++)
+    {
+        if (arr[i] > 0)
+        {
+            int absValue = abs(arr[i]);
+            if (!foundPositive || absValue < minAbsValue)
+            {
+                minIndex = (int)i;
+                minAbsValue = absValue;
+                foundPositive = true;
+            }
+        }
+    }
+
+    return minIndex;
 }
 
 size_t removeEvenFirstLastDigits(int* copyArr, const size_t size)
@@ -414,7 +441,7 @@ int formArrayFromD(int* copyArr, const size_t size)
     return hasElements ? 1 : 0;
 }
 
-void handleError(int* arr, char* message)
+void handleError(int* arr, const char* message)
 {
     if (arr != NULL)
     {
@@ -424,7 +451,7 @@ void handleError(int* arr, char* message)
     exit(1);
 }
 
-int* allocateArray(size_t size)
+int* allocateArray(const size_t size)
 {
     int* arr = malloc(size * sizeof(int));
     if (arr == NULL)
