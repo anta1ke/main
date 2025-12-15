@@ -186,8 +186,10 @@ int main(void)
 
     // 2. Удаление элементов с четными первой и последней цифрами
     printf("\n2. Удаление элементов с четными первой и последней цифрами:\n");
-    int* copyArr2 = copyArray(arr, size);
-    size_t newSize = removeEvenFirstLastDigits(copyArr2, size);
+    int* workArr2 = copyArray(arr, size);
+    size_t newSize = removeEvenFirstLastDigits(workArr2, size);
+    int* copyArr2 = copyArray(workArr2, newSize);
+    free(workArr2);
 
     if (newSize == 0)
     {
@@ -197,11 +199,7 @@ int main(void)
     {
         printf("   Размер после удаления: %zu\n", newSize);
         printf("   Результат (ненулевые элементы): ");
-        for (size_t i = 0; i < newSize; i++)
-        {
-            printf("%d ", copyArr2[i]);
-        }
-        printf("\n");
+        printArray(copyArr2, newSize);
     }
     free(copyArr2);
 
@@ -353,7 +351,7 @@ bool isLastDigitEven(const int num)
 int findMinPositive(const int* arr, const size_t size)
 {
     int minIndex = -1;
-    
+
     for (size_t i = 0; i < size; i++)
     {
         if (arr[i] > 0)
@@ -368,7 +366,7 @@ int findMinPositive(const int* arr, const size_t size)
             }
         }
     }
-    
+
     return minIndex;
 }
 
