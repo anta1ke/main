@@ -353,23 +353,22 @@ bool isLastDigitEven(const int num)
 int findMinPositive(const int* arr, const size_t size)
 {
     int minIndex = -1;
-    int minAbsValue = -1;
-    bool foundPositive = false;
-
+    
     for (size_t i = 0; i < size; i++)
     {
         if (arr[i] > 0)
         {
-            int absValue = abs(arr[i]);
-            if (!foundPositive || absValue < minAbsValue)
+            if (minIndex == -1)
             {
                 minIndex = (int)i;
-                minAbsValue = absValue;
-                foundPositive = true;
+            }
+            else if (abs(arr[i]) < abs(arr[minIndex]))
+            {
+                minIndex = (int)i;
             }
         }
     }
-
+    
     return minIndex;
 }
 
