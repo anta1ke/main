@@ -61,17 +61,16 @@ int replaceMinPositiveWithZero(const int* source, int* destination, const size_t
  * @param copyArr массив (будет изменен)
  * @param size размер массива
  * @return новый размер массива после удаления или 0 если все элементы удалены
- * @note Элементы не удаляются физически, а заменяются на 0 и перемещаются в конец
  */
 size_t removeEvenFirstLastDigits(int* copyArr, const size_t size);
 
 /**
- * @brief Перемещает нулевые элементы в конец массива
+ * @brief Удаляет нулевые элементы из массива
  * @param arr массив
  * @param size размер массива
- * @return массив с нулями в конце
+ * @return новый размер массива без нулей
  */
-void moveZerosToEnd(int* arr, const size_t size);
+size_t deleteZeros(int* arr, const size_t size);
 
 /**
  * @brief Формирует массив A из массива D по правилу
@@ -372,6 +371,10 @@ int findMinPositive(const int* arr, const size_t size)
 
 size_t removeEvenFirstLastDigits(int* copyArr, const size_t size)
 {
+    if (size == 0) {
+        return 0;
+    }
+
     size_t countRemoved = 0;
 
     for (size_t i = 0; i < size; i++)
@@ -394,14 +397,19 @@ size_t removeEvenFirstLastDigits(int* copyArr, const size_t size)
         printf("   Все элементы будут удалены\n");
         return 0;
     }
-    moveZerosToEnd(copyArr, size);
 
-    return size - countRemoved;
+    size_t newSize = deleteZeros(copyArr, size);
+
+    return newSize;
 }
 
-void moveZerosToEnd(int* arr, const size_t size)
+size_t deleteZeros(int* arr, const size_t size)
 {
-    int nonZeroIndex = 0;
+    if (size == 0) {
+        return 0;
+    }
+
+    size_t nonZeroIndex = 0;
 
     for (size_t i = 0; i < size; i++)
     {
@@ -412,10 +420,7 @@ void moveZerosToEnd(int* arr, const size_t size)
         }
     }
 
-    for (size_t i = nonZeroIndex; i < size; i++)
-    {
-        arr[i] = 0;
-    }
+    return nonZeroIndex;
 }
 
 int formArrayFromD(int* copyArr, const size_t size)
