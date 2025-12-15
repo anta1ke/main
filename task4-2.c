@@ -185,9 +185,10 @@ int main(void)
 
     // 2. Удаление элементов с четными первой и последней цифрами
     printf("\n2. Удаление элементов с четными первой и последней цифрами:\n");
-    int* workArr2 = copyArray(arr, size);
-    size_t newSize = removeEvenFirstLastDigits(workArr2, size);
-    int* copyArr2 = copyArray(workArr2, newSize);
+    size_t newSize = removeEvenFirstLastDigits(arr, size);
+    int* workArr2 = allocateArray(newSize);
+    deleteZeros(arr, size, workArr2);
+    printArray(workArr2, newSize);
     free(workArr2);
 
     if (newSize == 0)
@@ -197,7 +198,7 @@ int main(void)
     else
     {
         printf("   Размер после удаления: %zu\n", newSize);
-        printf("   Результат (ненулевые элементы): ");
+        printf("   Результат: ");
         printArray(copyArr2, newSize);
     }
     free(copyArr2);
@@ -397,13 +398,10 @@ size_t removeEvenFirstLastDigits(int* copyArr, const size_t size)
         printf("   Все элементы будут удалены\n");
         return 0;
     }
-
-    size_t newSize = deleteZeros(copyArr, size);
-
-    return newSize;
+    return countRemoved;
 }
 
-size_t deleteZeros(int* arr, const size_t size)
+size_t deleteZeros(int* arr, const size_t size, int* workArr2)
 {
     if (size == 0) {
         return 0;
@@ -415,12 +413,11 @@ size_t deleteZeros(int* arr, const size_t size)
     {
         if (arr[i] != 0)
         {
-            arr[nonZeroIndex] = arr[i];
-            nonZeroIndex++;
+            workArr2[nonZeroIndex++] = arr[i];
         }
     }
 
-    return nonZeroIndex;
+    return workArr2;
 }
 
 int formArrayFromD(int* copyArr, const size_t size)
